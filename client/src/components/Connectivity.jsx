@@ -2,7 +2,7 @@ const Connectivity = ({ data }) => {
     if (!data) return null;
 
     return (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-white" id="connectivity">
             <div className="container mx-auto px-6">
                 <h2 className="text-4xl md:text-5xl font-bold text-center mb-6 text-gray-800">
                     {data.title}

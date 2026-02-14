@@ -8,6 +8,9 @@ import Amenities from '../components/Amenities';
 import About from '../components/About';
 import Construction from '../components/Construction';
 import FAQ from '../components/FAQ';
+import Township from '../components/Township';
+import FloorPlans from '../components/FloorPlans';
+import DeveloperStats from '../components/DeveloperStats';
 
 const Home = () => {
     const [sections, setSections] = useState({});
@@ -32,10 +35,8 @@ const Home = () => {
             // Convert sections array to object keyed by section name
             const sectionsObj = {};
             sectionsRes.data.data.forEach((section) => {
-                console.log('Processing section:', section.sectionName);
                 sectionsObj[section.sectionName] = section;
             });
-            console.log('Final sections object keys:', Object.keys(sectionsObj));
 
             setSections(sectionsObj);
             setAmenities(amenitiesRes.data.data);
@@ -53,8 +54,8 @@ const Home = () => {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-100">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-                    <p className="text-xl text-gray-700">Loading...</p>
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary mx-auto mb-4"></div>
+                    <p className="text-xl text-secondary font-serif">Loading...</p>
                 </div>
             </div>
         );
@@ -63,11 +64,13 @@ const Home = () => {
     return (
         <div className="min-h-screen">
             <Hero data={sections.hero} />
-            <Overview data={sections.overview} />
-            <Connectivity data={sections.connectivity} />
-            <Amenities amenities={amenities} />
             <About data={sections.about} />
+            <Amenities amenities={amenities} />
+            <Township />
+            <FloorPlans />
+            <Connectivity data={sections.connectivity} />
             <Construction data={sections.construction} />
+            <DeveloperStats />
             <FAQ faqs={faqs} />
         </div>
     );

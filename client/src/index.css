@@ -1,1 +1,49 @@
 @import "tailwindcss";
+
+@theme {
+    --color-primary: #82b440;
+    --color-primary-dark: #6a9c2e;
+    --color-secondary: #1a3c34;
+    --color-secondary-light: #2c5c50;
+    --color-accent: #e8f7f0;
+
+    --font-serif: "Playfair Display", serif;
+    --font-sans: "Lato", sans-serif;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply font-sans text-gray-700 antialiased;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-serif text-secondary;
+    }
+}
+
+@layer components {
+    .btn-primary {
+        @apply bg-primary text-white px-6 py-3 rounded hover:bg-primary-dark transition-colors duration-300 font-sans font-semibold uppercase tracking-wide text-sm;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary text-white px-6 py-3 rounded hover:bg-secondary-light transition-colors duration-300 font-sans font-semibold uppercase tracking-wide text-sm;
+    }
+
+    .section-title {
+        @apply text-3xl md:text-4xl lg:text-5xl font-bold text-secondary text-center mb-4;
+    }
+
+    .section-subtitle {
+        @apply text-gray-500 text-center uppercase tracking-widest text-sm mb-12 font-sans;
+    }
+}
