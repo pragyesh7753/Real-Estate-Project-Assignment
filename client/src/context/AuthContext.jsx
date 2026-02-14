@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
         try {
             await api.get('/auth/check');
             setIsAuthenticated(true);
-        } catch (error) {
+        } catch {
             setIsAuthenticated(false);
         } finally {
             setLoading(false);

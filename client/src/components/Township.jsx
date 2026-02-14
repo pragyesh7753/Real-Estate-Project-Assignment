@@ -1,25 +1,11 @@
 import { useState } from 'react';
 
-const Township = () => {
-    const buildings = [
-        {
-            name: "Vignaharta Enclave",
-            status: "Newly Launched",
-            image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" // Modern glass building
-        },
-        {
-            name: "Vignaharta Aaradhya",
-            status: "Completed",
-            image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-        },
-        {
-            name: "Vignaharta Residency",
-            status: "Under Construction",
-            image: "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" // High rise
-        }
-    ];
-
+const Township = ({ data }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    if (!data || !data.content || !data.content.buildings) return null;
+
+    const buildings = data.content.buildings;
 
     const nextSlide = () => {
         setCurrentIndex((prev) => (prev + 1) % buildings.length);

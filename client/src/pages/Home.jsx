@@ -66,11 +66,11 @@ const Home = () => {
             <Hero data={sections.hero} />
             <About data={sections.about} />
             <Amenities amenities={amenities} />
-            <Township />
-            <FloorPlans />
+            <Township data={sections.township} />
+            <FloorPlans data={sections.floorPlans} />
             <Connectivity data={sections.connectivity} />
             <Construction data={sections.construction} />
-            <DeveloperStats />
+            <DeveloperStats data={sections.developer} />
             <FAQ faqs={faqs} />
         </div>
     );

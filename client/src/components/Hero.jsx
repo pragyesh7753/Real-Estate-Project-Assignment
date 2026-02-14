@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 const Hero = ({ data }) => {
     // Static data for pricing card since backend doesn't support it yet

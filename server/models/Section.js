@@ -20,6 +20,10 @@ const sectionSchema = new mongoose.Schema(
             type: String,
             default: '',
         },
+        content: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {},
+        },
     },
     {
         timestamps: true,

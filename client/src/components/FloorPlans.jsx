@@ -1,31 +1,11 @@
 import { useState } from 'react';
 
-const FloorPlans = () => {
+const FloorPlans = ({ data }) => {
     const [activeTab, setActiveTab] = useState('1bhk');
 
-    const plans = {
-        '1bhk': {
-            type: "1 BHK",
-            area: "380-411 RERA Sq. ft",
-            price: "Click for price",
-            image: "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Architecture drawing
-            color: "bg-primary"
-        },
-        '2bhk': {
-            type: "2 BHK",
-            area: "580-620 RERA Sq. ft",
-            price: "Click for price",
-            image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Apartment layout
-            color: "bg-blue-400"
-        },
-        '5.5bhk': {
-            type: "Jodi Flats",
-            area: "On Request",
-            price: "Click for price",
-            image: "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", // Luxury interior
-            color: "bg-teal-400"
-        }
-    };
+    if (!data || !data.content || !data.content.plans) return null;
+
+    const plans = data.content.plans;
 
     return (
         <section className="py-20 bg-accent/20" id="floor-plans">

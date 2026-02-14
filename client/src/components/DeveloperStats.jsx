@@ -1,11 +1,7 @@
-const DeveloperStats = () => {
-    const stats = [
-        { value: "6", label: "Projects" },
-        { value: "1.32 LAC", label: "sq. ft. area developed" },
-        { value: "449+", label: "Happy Families" },
-        { value: "3.77 LAC", label: "sq. ft. ongoing" },
-        { value: "2.7 LAC", label: "sq. ft. Area Upcoming" },
-    ];
+const DeveloperStats = ({ data }) => {
+    if (!data || !data.content || !data.content.stats) return null;
+
+    const stats = data.content.stats;
 
     return (
         <section className="bg-white py-20" id="developer">

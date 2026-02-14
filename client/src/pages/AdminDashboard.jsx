@@ -32,7 +32,7 @@ const AdminDashboard = () => {
             setSections(sectionsRes.data.data);
             setAmenities(amenitiesRes.data.data);
             setFaqs(faqsRes.data.data);
-        } catch (error) {
+        } catch {
             toast.error('Failed to load data');
         } finally {
             setLoading(false);
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
             toast.success('Section updated successfully');
             setEditingSection(null);
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to update section');
         }
     };
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
             toast.success('Amenity updated successfully');
             setEditingAmenity(null);
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to update amenity');
         }
     };
@@ -87,7 +87,7 @@ const AdminDashboard = () => {
             toast.success('Amenity added successfully');
             setNewAmenity({ title: '', description: '' });
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to add amenity');
         }
     };
@@ -98,7 +98,7 @@ const AdminDashboard = () => {
             await api.delete(`/amenities/${id}`);
             toast.success('Amenity deleted successfully');
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to delete amenity');
         }
     };
@@ -114,7 +114,7 @@ const AdminDashboard = () => {
             toast.success('FAQ updated successfully');
             setEditingFaq(null);
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to update FAQ');
         }
     };
@@ -129,7 +129,7 @@ const AdminDashboard = () => {
             toast.success('FAQ added successfully');
             setNewFaq({ question: '', answer: '' });
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to add FAQ');
         }
     };
@@ -140,7 +140,7 @@ const AdminDashboard = () => {
             await api.delete(`/faqs/${id}`);
             toast.success('FAQ deleted successfully');
             fetchData();
-        } catch (error) {
+        } catch {
             toast.error('Failed to delete FAQ');
         }
     };

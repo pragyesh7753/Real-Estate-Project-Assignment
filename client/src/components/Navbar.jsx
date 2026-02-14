@@ -32,7 +32,7 @@ const Navbar = () => {
 
         if (location.pathname !== '/') {
             // Navigate to home first, then scroll (handled by useEffect on Home or timeout)
-            window.location.href = `/${id}`;
+            window.location.assign(`/${id}`);
         } else {
             // If already on home, smooth scroll
             const element = document.querySelector(id);
