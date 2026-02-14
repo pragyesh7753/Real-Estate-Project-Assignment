@@ -72,7 +72,38 @@ const logout = async (req, res) => {
     }
 };
 
+// @desc    Check authentication status
+// @route   GET /api/auth/check
+// @access  Public
+const checkAuth = async (req, res) => {
+    try {
+        if (req.session && req.session.isAuthenticated) {
+            res.status(200).json({
+                success: true,
+                isAuthenticated: true,
+                admin: {
+                    email: req.session.adminEmail,
+                },
+            });
+        } else {
+            res.status(401).json({
+                success: false,
+                isAuthenticated: false,
+                message: 'Not authenticated',
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Server error',
+            error: error.message,
+        });
+    }
+};
+
 module.exports = {
     login,
     logout,
+    checkAuth,
 };
+
