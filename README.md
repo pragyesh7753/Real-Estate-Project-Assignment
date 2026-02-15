@@ -45,7 +45,7 @@ A comprehensive real estate website solution featuring a modern public landing p
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/pragyesh7753/Real-Estate-Project-Assignment
 cd Real-Estate-Project-Assignment
 ```
 
