@@ -53,13 +53,16 @@ const Amenities = ({ amenities }) => {
 
                     {/* Right - Grid */}
                     <div className="w-full lg:w-1/2">
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                             {amenities.map((amenity) => (
-                                <div key={amenity._id} className="flex flex-col items-center group cursor-pointer">
-                                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center p-5 shadow-md mb-4 group-hover:bg-primary group-hover:text-white transition-colors duration-300 border border-green-100">
+                                <div
+                                    key={amenity._id}
+                                    className="bg-white p-6 rounded-xl shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-transparent hover:border-green-100 flex items-center gap-4 group"
+                                >
+                                    <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center p-3 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
                                         {getIcon(amenity.title)}
                                     </div>
-                                    <h4 className="text-center text-secondary font-medium group-hover:text-primary transition-colors">
+                                    <h4 className="text-secondary font-medium text-lg font-serif">
                                         {amenity.title}
                                     </h4>
                                 </div>

@@ -2,7 +2,7 @@ const About = ({ data }) => {
     if (!data) return null;
 
     return (
-        <section className="py-20 bg-accent/30 relative overflow-hidden" id="overview">
+        <section className="py-20 bg-white relative overflow-hidden" id="overview">
             <div className="container mx-auto px-6 relative z-10">
                 <div className="flex flex-col lg:flex-row items-center gap-16">
                     {/* Left Content - Circular Images */}

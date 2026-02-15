@@ -22,12 +22,12 @@ const Hero = ({ data }) => {
                                 alt="Luxury Building"
                                 className="w-full h-[500px] object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
-                                <h3 className="text-white text-xl font-serif mb-2 tracking-wider">THINKING OF A</h3>
-                                <h2 className="text-white text-3xl font-bold mb-4">FANTASTIC VICINITY?</h2>
-                                <div className="flex gap-4 text-white/90 text-sm font-sans">
-                                    <span className="bg-primary/80 px-3 py-1 rounded backdrop-blur-sm">20+ PODIUM AMENITIES</span>
-                                    <span className="bg-primary/80 px-3 py-1 rounded backdrop-blur-sm">SPACIOUS BALCONY HOMES</span>
+                            <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 via-secondary/40 to-transparent flex flex-col justify-end p-8">
+                                <h3 className="text-white text-xl font-serif mb-2 tracking-wider animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>THINKING OF A</h3>
+                                <h2 className="text-white text-3xl font-bold mb-4 animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>FANTASTIC VICINITY?</h2>
+                                <div className="flex gap-4 text-white/90 text-sm font-sans animate-slide-up-fade" style={{ animationDelay: '0.3s' }}>
+                                    <span className="bg-white/20 px-3 py-1 rounded backdrop-blur-md border border-white/30">20+ PODIUM AMENITIES</span>
+                                    <span className="bg-white/20 px-3 py-1 rounded backdrop-blur-md border border-white/30">SPACIOUS BALCONY HOMES</span>
                                 </div>
                             </div>
                         </div>

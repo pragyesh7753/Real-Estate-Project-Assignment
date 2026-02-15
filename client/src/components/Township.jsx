@@ -16,7 +16,7 @@ const Township = ({ data }) => {
     };
 
     return (
-        <section className="py-20 bg-gradient-to-b from-accent/40 to-white" id="township">
+        <section className="py-20 bg-white" id="township">
             <div className="container mx-auto px-6">
                 <h2 className="section-title mb-12">Explore More Buildings in the Township</h2>
 
