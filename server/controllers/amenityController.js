@@ -26,7 +26,7 @@ const getAllAmenities = async (req, res) => {
 // @access  Private
 const createAmenity = async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, description, imageUrl } = req.body;
 
         if (!title) {
             return res.status(400).json({
@@ -38,6 +38,7 @@ const createAmenity = async (req, res) => {
         const amenity = await Amenity.create({
             title,
             description: description || '',
+            imageUrl: imageUrl || '',
         });
 
         res.status(201).json({
@@ -59,7 +60,7 @@ const createAmenity = async (req, res) => {
 // @access  Private
 const updateAmenity = async (req, res) => {
     try {
-        const { title, description } = req.body;
+        const { title, description, imageUrl } = req.body;
 
         const amenity = await Amenity.findById(req.params.id);
 
@@ -72,6 +73,7 @@ const updateAmenity = async (req, res) => {
 
         amenity.title = title !== undefined ? title : amenity.title;
         amenity.description = description !== undefined ? description : amenity.description;
+        amenity.imageUrl = imageUrl !== undefined ? imageUrl : amenity.imageUrl;
 
         const updatedAmenity = await amenity.save();
 

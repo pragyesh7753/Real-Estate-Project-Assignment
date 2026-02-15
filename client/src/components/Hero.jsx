@@ -18,7 +18,7 @@ const Hero = ({ data }) => {
                     <div className="w-full lg:w-1/2 relative group">
                         <div className="relative rounded-lg overflow-hidden shadow-2xl transform transition duration-500 hover:scale-[1.01]">
                             <img
-                                src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                                src={data.imageUrl || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"}
                                 alt="Luxury Building"
                                 className="w-full h-[500px] object-cover"
                             />

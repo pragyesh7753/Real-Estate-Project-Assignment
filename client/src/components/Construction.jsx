@@ -1,8 +1,8 @@
 const Construction = ({ data }) => {
     if (!data) return null;
 
-    // Hardcoded construction updates for visual match since backend only provides one text block
-    const updates = [
+    // Use dynamic updates if available, fallback to hardcoded
+    const updates = data.content?.updates || [
         {
             stage: "Under Construction",
             tower: "Tower A",

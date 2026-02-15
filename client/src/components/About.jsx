@@ -9,21 +9,21 @@ const About = ({ data }) => {
                     <div className="w-full lg:w-1/2 relative min-h-[400px]">
                         <div className="absolute top-0 left-10 w-64 h-64 rounded-full overflow-hidden border-4 border-white shadow-xl z-20">
                             <img
-                                src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                src={data.content?.images?.[0] || "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                                 alt="Interior"
                                 className="w-full h-full object-cover"
                             />
                         </div>
                         <div className="absolute top-32 left-48 w-72 h-72 rounded-full overflow-hidden border-4 border-white shadow-xl z-10">
                             <img
-                                src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                src={data.content?.images?.[1] || "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                                 alt="Exterior"
                                 className="w-full h-full object-cover"
                             />
                         </div>
                         <div className="absolute bottom-0 left-20 w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-xl z-30">
                             <img
-                                src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                src={data.content?.images?.[2] || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
                                 alt="Detail"
                                 className="w-full h-full object-cover"
                             />

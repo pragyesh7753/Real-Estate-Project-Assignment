@@ -12,7 +12,7 @@ const AdminDashboard = () => {
     const [editingSection, setEditingSection] = useState(null);
     const [editingAmenity, setEditingAmenity] = useState(null);
     const [editingFaq, setEditingFaq] = useState(null);
-    const [newAmenity, setNewAmenity] = useState({ title: '', description: '' });
+    const [newAmenity, setNewAmenity] = useState({ title: '', description: '', imageUrl: '' });
     const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
     const { logout } = useAuth();
     const navigate = useNavigate();
@@ -85,7 +85,7 @@ const AdminDashboard = () => {
         try {
             await api.post('/amenities', newAmenity);
             toast.success('Amenity added successfully');
-            setNewAmenity({ title: '', description: '' });
+            setNewAmenity({ title: '', description: '', imageUrl: '' });
             fetchData();
         } catch {
             toast.error('Failed to add amenity');
@@ -219,6 +219,19 @@ const AdminDashboard = () => {
                                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                             />
                                         </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Image URL
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editingSection.imageUrl || ''}
+                                                onChange={(e) =>
+                                                    setEditingSection({ ...editingSection, imageUrl: e.target.value })
+                                                }
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                            />
+                                        </div>
                                         <div className="flex gap-4">
                                             <button
                                                 onClick={() => handleSectionSave(section._id)}
@@ -284,6 +297,13 @@ const AdminDashboard = () => {
                                 rows="3"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                             />
+                            <input
+                                type="text"
+                                placeholder="Image URL"
+                                value={newAmenity.imageUrl}
+                                onChange={(e) => setNewAmenity({ ...newAmenity, imageUrl: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
                             <button
                                 onClick={handleAmenityAdd}
                                 className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
@@ -313,6 +333,15 @@ const AdminDashboard = () => {
                                                 setEditingAmenity({ ...editingAmenity, description: e.target.value })
                                             }
                                             rows="3"
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Image URL"
+                                            value={editingAmenity.imageUrl || ''}
+                                            onChange={(e) =>
+                                                setEditingAmenity({ ...editingAmenity, imageUrl: e.target.value })
+                                            }
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                                         />
                                         <div className="flex gap-4">

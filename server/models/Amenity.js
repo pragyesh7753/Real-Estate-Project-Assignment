@@ -11,6 +11,10 @@ const amenitySchema = new mongoose.Schema(
             type: String,
             default: '',
         },
+        imageUrl: {
+            type: String,
+            default: '',
+        },
     },
     {
         timestamps: true,
