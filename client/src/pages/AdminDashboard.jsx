@@ -67,7 +67,7 @@ const AdminDashboard = () => {
     const handleLogout = async () => {
         await logout();
         toast.success('Logged out successfully');
-        navigate('/admin');
+        navigate('/');
     };
 
     // Generic Handlers for Modal Opening
