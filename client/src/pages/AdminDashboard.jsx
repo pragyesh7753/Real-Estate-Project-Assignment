@@ -12,8 +12,8 @@ import {
     Plus,
     Edit2,
     Trash2,
-    Search,
-    ChevronRight
+    Menu,
+    X
 } from 'lucide-react';
 import { StatCard, SidebarItem, Modal, Header } from '../components/AdminComponents';
 
@@ -23,6 +23,7 @@ const AdminDashboard = () => {
     const [faqs, setFaqs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Modal States
     const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
@@ -326,37 +327,54 @@ const AdminDashboard = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 flex font-sans">
+            {/* Sidebar Overlay for Mobile */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-30 lg:hidden backdrop-blur-sm transition-opacity"
+                    onClick={() => setIsSidebarOpen(false)}
+                ></div>
+            )}
+
             {/* Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200 fixed h-full z-20 hidden lg:flex flex-col">
-                <div className="p-6 border-b border-gray-100">
-                    <h2 className="text-2xl font-serif font-bold text-secondary">LIMS Admin</h2>
-                    <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">Management Console</p>
+            <aside className={`
+                fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 z-40 transform transition-transform duration-300 ease-in-out
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+                lg:translate-x-0 lg:static lg:block flex flex-col
+            `}>
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <div>
+                        <h2 className="text-2xl font-serif font-bold text-secondary">LIMS Admin</h2>
+                        <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">Management Console</p>
+                    </div>
+                    <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-gray-500 hover:text-red-500">
+                        <X size={24} />
+                    </button>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1">
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                     <SidebarItem
                         icon={LayoutDashboard}
                         label="Dashboard"
                         active={activeTab === 'dashboard'}
-                        onClick={() => setActiveTab('dashboard')}
+                        onClick={() => { setActiveTab('dashboard'); setIsSidebarOpen(false); }}
                     />
                     <SidebarItem
                         icon={Layers}
                         label="Sections"
                         active={activeTab === 'sections'}
-                        onClick={() => setActiveTab('sections')}
+                        onClick={() => { setActiveTab('sections'); setIsSidebarOpen(false); }}
                     />
                     <SidebarItem
                         icon={Coffee}
                         label="Amenities"
                         active={activeTab === 'amenities'}
-                        onClick={() => setActiveTab('amenities')}
+                        onClick={() => { setActiveTab('amenities'); setIsSidebarOpen(false); }}
                     />
                     <SidebarItem
                         icon={MessageSquare}
                         label="FAQ's"
                         active={activeTab === 'faqs'}
-                        onClick={() => setActiveTab('faqs')}
+                        onClick={() => { setActiveTab('faqs'); setIsSidebarOpen(false); }}
                     />
                 </nav>
 
@@ -372,11 +390,18 @@ const AdminDashboard = () => {
             </aside>
 
             {/* Mobile Header */}
-            <div className="lg:hidden fixed top-0 w-full bg-white z-20 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-                <h2 className="text-xl font-serif font-bold text-secondary">LIMS Admin</h2>
+            <div className="lg:hidden fixed top-0 w-full bg-white z-20 border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setIsSidebarOpen(true)}
+                        className="text-gray-600 hover:text-primary transition-colors"
+                    >
+                        <Menu size={24} />
+                    </button>
+                    <h2 className="text-xl font-serif font-bold text-secondary">LIMS Admin</h2>
+                </div>
                 <div className="flex gap-4">
-                    {/* Simplified Mobile Nav could go here */}
-                    <button onClick={handleLogout} className="text-gray-600"><LogOut size={20} /></button>
+                    <button onClick={handleLogout} className="text-gray-600 hover:text-red-500 transition-colors"><LogOut size={20} /></button>
                 </div>
             </div>
 

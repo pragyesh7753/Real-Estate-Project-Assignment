@@ -1,29 +1,35 @@
 import { X } from 'lucide-react';
 
-export const StatCard = ({ title, value, icon: Icon, color }) => (
-    <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 flex items-center justify-between">
-        <div>
-            <p className="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">{title}</p>
-            <h3 className="text-3xl font-serif font-bold text-gray-800">{value}</h3>
+export const StatCard = ({ title, value, icon, color }) => {
+    const Icon = icon;
+    return (
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 flex items-center justify-between">
+            <div>
+                <p className="text-gray-500 text-sm font-medium uppercase tracking-wider mb-1">{title}</p>
+                <h3 className="text-3xl font-serif font-bold text-gray-800">{value}</h3>
+            </div>
+            <div className={`p-3 rounded-full ${color || 'bg-primary/10 text-primary'}`}>
+                <Icon size={24} />
+            </div>
         </div>
-        <div className={`p-3 rounded-full ${color || 'bg-primary/10 text-primary'}`}>
-            <Icon size={24} />
-        </div>
-    </div>
-);
+    );
+};
 
-export const SidebarItem = ({ icon: Icon, label, active, onClick }) => (
-    <button
-        onClick={onClick}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${active
-            ? 'bg-primary text-white shadow-md'
-            : 'text-gray-600 hover:bg-gray-100 hover:text-primary'
-            }`}
-    >
-        <Icon size={20} className={active ? 'text-white' : 'text-gray-500 group-hover:text-primary'} />
-        <span className={`font-medium ${active ? 'font-semibold' : ''}`}>{label}</span>
-    </button>
-);
+export const SidebarItem = ({ icon, label, active, onClick }) => {
+    const Icon = icon;
+    return (
+        <button
+            onClick={onClick}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${active
+                ? 'bg-primary text-white shadow-md'
+                : 'text-gray-600 hover:bg-gray-100 hover:text-primary'
+                }`}
+        >
+            <Icon size={20} className={active ? 'text-white' : 'text-gray-500 group-hover:text-primary'} />
+            <span className={`font-medium ${active ? 'font-semibold' : ''}`}>{label}</span>
+        </button>
+    );
+};
 
 export const Modal = ({ isOpen, onClose, title, children }) => {
     if (!isOpen) return null;

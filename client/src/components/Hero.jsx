@@ -1,5 +1,3 @@
-import { useEffect } from 'react';
-
 const Hero = ({ data }) => {
     // Static data for pricing card since backend doesn't support it yet
     const location = "BLDG. NO. 223/224, CIRCLE : KANNAMWAR NAGAR I, VIKHROLI (EAST)";
