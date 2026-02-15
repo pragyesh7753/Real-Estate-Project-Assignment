@@ -3,17 +3,41 @@ import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import {
+    LayoutDashboard,
+    Layers,
+    Coffee,
+    MessageSquare,
+    LogOut,
+    Plus,
+    Edit2,
+    Trash2,
+    Search,
+    ChevronRight
+} from 'lucide-react';
+import { StatCard, SidebarItem, Modal, Header } from '../components/AdminComponents';
 
 const AdminDashboard = () => {
     const [sections, setSections] = useState([]);
     const [amenities, setAmenities] = useState([]);
     const [faqs, setFaqs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('dashboard');
+
+    // Modal States
+    const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
+    const [isAmenityModalOpen, setIsAmenityModalOpen] = useState(false);
+    const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+
+    // Edit States
     const [editingSection, setEditingSection] = useState(null);
     const [editingAmenity, setEditingAmenity] = useState(null);
     const [editingFaq, setEditingFaq] = useState(null);
+
+    // New Item States
     const [newAmenity, setNewAmenity] = useState({ title: '', description: '', imageUrl: '' });
     const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
+
     const { logout } = useAuth();
     const navigate = useNavigate();
 
@@ -45,442 +69,469 @@ const AdminDashboard = () => {
         navigate('/admin');
     };
 
-    // Section Management
-    const handleSectionEdit = (section) => {
+    // Generic Handlers for Modal Opening
+    const openSectionEdit = (section) => {
         setEditingSection({ ...section });
+        setIsSectionModalOpen(true);
     };
 
-    const handleSectionSave = async (id) => {
+    const openAmenityEdit = (amenity) => {
+        setEditingAmenity({ ...amenity });
+        setIsAmenityModalOpen(true);
+    };
+
+    const openFaqEdit = (faq) => {
+        setEditingFaq({ ...faq });
+        setIsFaqModalOpen(true);
+    };
+
+    // Save Handlers
+    const handleSectionSave = async () => {
         try {
-            await api.put(`/sections/${id}`, editingSection);
-            toast.success('Section updated successfully');
-            setEditingSection(null);
+            await api.put(`/sections/${editingSection._id}`, editingSection);
+            toast.success('Section updated');
+            setIsSectionModalOpen(false);
             fetchData();
         } catch {
             toast.error('Failed to update section');
         }
     };
 
-    // Amenity Management
-    const handleAmenityEdit = (amenity) => {
-        setEditingAmenity({ ...amenity });
-    };
-
-    const handleAmenitySave = async (id) => {
-        try {
-            await api.put(`/amenities/${id}`, editingAmenity);
-            toast.success('Amenity updated successfully');
-            setEditingAmenity(null);
-            fetchData();
-        } catch {
-            toast.error('Failed to update amenity');
-        }
-    };
-
-    const handleAmenityAdd = async () => {
-        if (!newAmenity.title || !newAmenity.description) {
-            toast.error('Please fill in all fields');
+    const handleAmenitySave = async (isNew = false) => {
+        const item = isNew ? newAmenity : editingAmenity;
+        if (!item.title || !item.description) {
+            toast.error('Fill required fields');
             return;
         }
+
         try {
-            await api.post('/amenities', newAmenity);
-            toast.success('Amenity added successfully');
-            setNewAmenity({ title: '', description: '', imageUrl: '' });
+            if (isNew) {
+                await api.post('/amenities', newAmenity);
+                toast.success('Amenity added');
+                setNewAmenity({ title: '', description: '', imageUrl: '' });
+                setIsAmenityModalOpen(false); // Close if open
+            } else {
+                await api.put(`/amenities/${editingAmenity._id}`, editingAmenity);
+                toast.success('Amenity updated');
+                setIsAmenityModalOpen(false);
+            }
             fetchData();
         } catch {
-            toast.error('Failed to add amenity');
+            toast.error('Operation failed');
         }
     };
 
-    const handleAmenityDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this amenity?')) return;
-        try {
-            await api.delete(`/amenities/${id}`);
-            toast.success('Amenity deleted successfully');
-            fetchData();
-        } catch {
-            toast.error('Failed to delete amenity');
-        }
-    };
-
-    // FAQ Management
-    const handleFaqEdit = (faq) => {
-        setEditingFaq({ ...faq });
-    };
-
-    const handleFaqSave = async (id) => {
-        try {
-            await api.put(`/faqs/${id}`, editingFaq);
-            toast.success('FAQ updated successfully');
-            setEditingFaq(null);
-            fetchData();
-        } catch {
-            toast.error('Failed to update FAQ');
-        }
-    };
-
-    const handleFaqAdd = async () => {
-        if (!newFaq.question || !newFaq.answer) {
-            toast.error('Please fill in all fields');
+    const handleFaqSave = async (isNew = false) => {
+        const item = isNew ? newFaq : editingFaq;
+        if (!item.question || !item.answer) {
+            toast.error('Fill required fields');
             return;
         }
+
         try {
-            await api.post('/faqs', newFaq);
-            toast.success('FAQ added successfully');
-            setNewFaq({ question: '', answer: '' });
+            if (isNew) {
+                await api.post('/faqs', newFaq);
+                toast.success('FAQ added');
+                setNewFaq({ question: '', answer: '' });
+                setIsFaqModalOpen(false);
+            } else {
+                await api.put(`/faqs/${editingFaq._id}`, editingFaq);
+                toast.success('FAQ updated');
+                setIsFaqModalOpen(false);
+            }
             fetchData();
         } catch {
-            toast.error('Failed to add FAQ');
+            toast.error('Operation failed');
         }
     };
 
-    const handleFaqDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this FAQ?')) return;
+    // Delete Handlers
+    const handleDelete = async (endpoint, id, type) => {
+        if (!window.confirm(`Delete this ${type}?`)) return;
         try {
-            await api.delete(`/faqs/${id}`);
-            toast.success('FAQ deleted successfully');
+            await api.delete(`/${endpoint}/${id}`);
+            toast.success(`${type} deleted`);
             fetchData();
         } catch {
-            toast.error('Failed to delete FAQ');
+            toast.error(`Failed to delete ${type}`);
         }
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-xl">Loading...</div>
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
 
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'dashboard':
+                return (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
+                        <StatCard
+                            title="Total Sections"
+                            value={sections.length}
+                            icon={Layers}
+                            color="bg-blue-50 text-blue-600"
+                        />
+                        <StatCard
+                            title="Total Amenities"
+                            value={amenities.length}
+                            icon={Coffee}
+                            color="bg-green-50 text-green-600"
+                        />
+                        <StatCard
+                            title="Total FAQs"
+                            value={faqs.length}
+                            icon={MessageSquare}
+                            color="bg-purple-50 text-purple-600"
+                        />
+                    </div>
+                );
+            case 'sections':
+                return (
+                    <div className="animate-fade-in">
+                        <Header
+                            title="Website Sections"
+                            subtitle="Manage the main content sections of your landing page."
+                        />
+                        <div className="grid grid-cols-1 gap-6">
+                            {sections.map((section) => (
+                                <div key={section._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:shadow-md transition-shadow">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded font-semibold uppercase tracking-wide">
+                                                {section.section}
+                                            </span>
+                                        </div>
+                                        <h3 className="text-xl font-serif font-bold text-gray-800 mb-1">{section.title}</h3>
+                                        {section.subtitle && <p className="text-sm text-gray-500 italic mb-2">{section.subtitle}</p>}
+                                        <p className="text-gray-600 text-sm line-clamp-2">{section.description}</p>
+                                    </div>
+                                    <button
+                                        onClick={() => openSectionEdit(section)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-light transition-colors text-sm font-medium"
+                                    >
+                                        <Edit2 size={16} /> Edit
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            case 'amenities':
+                return (
+                    <div className="animate-fade-in">
+                        <Header
+                            title="Amenities"
+                            subtitle="Showcase the features and facilities available."
+                            action={
+                                <button
+                                    onClick={() => { setEditingAmenity(null); setIsAmenityModalOpen(true); }}
+                                    className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 font-semibold text-sm"
+                                >
+                                    <Plus size={18} /> Add Amenity
+                                </button>
+                            }
+                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {amenities.map((amenity) => (
+                                <div key={amenity._id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-lg transition-all duration-300">
+                                    <div className="h-48 bg-gray-100 relative overflow-hidden">
+                                        {amenity.imageUrl ? (
+                                            <img src={amenity.imageUrl} alt={amenity.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full text-gray-400">
+                                                <Coffee size={48} />
+                                            </div>
+                                        )}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-end p-4 gap-2">
+                                            <button
+                                                onClick={() => openAmenityEdit(amenity)}
+                                                className="p-2 bg-white/90 text-secondary rounded-full hover:bg-white transition-colors"
+                                            >
+                                                <Edit2 size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete('amenities', amenity._id, 'amenity')}
+                                                className="p-2 bg-red-500/90 text-white rounded-full hover:bg-red-600 transition-colors"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="p-5">
+                                        <h3 className="font-serif font-bold text-lg text-gray-800 mb-2">{amenity.title}</h3>
+                                        <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">{amenity.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            case 'faqs':
+                return (
+                    <div className="animate-fade-in">
+                        <Header
+                            title="Questions & Answers"
+                            subtitle="Manage commonly asked questions by customers."
+                            action={
+                                <button
+                                    onClick={() => { setEditingFaq(null); setIsFaqModalOpen(true); }}
+                                    className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 font-semibold text-sm"
+                                >
+                                    <Plus size={18} /> Add FAQ
+                                </button>
+                            }
+                        />
+                        <div className="space-y-4">
+                            {faqs.map((faq) => (
+                                <div key={faq._id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+                                    <div className="flex justify-between items-start gap-4">
+                                        <div className="flex items-start gap-4">
+                                            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg shrink-0">
+                                                <MessageSquare size={20} />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-serif font-bold text-gray-800 mb-2">{faq.question}</h4>
+                                                <p className="text-gray-600 text-sm leading-relaxed">{faq.answer}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <button
+                                                onClick={() => openFaqEdit(faq)}
+                                                className="p-2 text-gray-400 hover:text-secondary hover:bg-gray-50 rounded-lg transition-colors"
+                                            >
+                                                <Edit2 size={18} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete('faqs', faq._id, 'FAQ')}
+                                                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            default:
+                return null;
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-gray-100">
-            {/* Header */}
-            <header className="bg-white shadow-md">
-                <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+        <div className="min-h-screen bg-gray-50 flex font-sans">
+            {/* Sidebar */}
+            <aside className="w-64 bg-white border-r border-gray-200 fixed h-full z-20 hidden lg:flex flex-col">
+                <div className="p-6 border-b border-gray-100">
+                    <h2 className="text-2xl font-serif font-bold text-secondary">LIMS Admin</h2>
+                    <p className="text-xs text-gray-500 uppercase tracking-widest mt-1">Management Console</p>
+                </div>
+
+                <nav className="flex-1 p-4 space-y-1">
+                    <SidebarItem
+                        icon={LayoutDashboard}
+                        label="Dashboard"
+                        active={activeTab === 'dashboard'}
+                        onClick={() => setActiveTab('dashboard')}
+                    />
+                    <SidebarItem
+                        icon={Layers}
+                        label="Sections"
+                        active={activeTab === 'sections'}
+                        onClick={() => setActiveTab('sections')}
+                    />
+                    <SidebarItem
+                        icon={Coffee}
+                        label="Amenities"
+                        active={activeTab === 'amenities'}
+                        onClick={() => setActiveTab('amenities')}
+                    />
+                    <SidebarItem
+                        icon={MessageSquare}
+                        label="FAQ's"
+                        active={activeTab === 'faqs'}
+                        onClick={() => setActiveTab('faqs')}
+                    />
+                </nav>
+
+                <div className="p-4 border-t border-gray-100">
                     <button
                         onClick={handleLogout}
-                        className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
+                        className="flex items-center gap-3 w-full px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors"
                     >
-                        Logout
+                        <LogOut size={20} />
+                        <span className="font-medium">Logout</span>
                     </button>
                 </div>
-            </header>
+            </aside>
 
-            <div className="container mx-auto px-6 py-8">
-                {/* Sections Management */}
-                <section className="mb-12">
-                    <h2 className="text-3xl font-bold mb-6 text-gray-800">Manage Sections</h2>
-                    <div className="space-y-6">
-                        {sections.map((section) => (
-                            <div key={section._id} className="bg-white rounded-lg shadow-md p-6">
-                                <h3 className="text-xl font-semibold mb-4 text-gray-700 capitalize">
-                                    {section.section}
-                                </h3>
-                                {editingSection && editingSection._id === section._id ? (
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Title
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={editingSection.title}
-                                                onChange={(e) =>
-                                                    setEditingSection({ ...editingSection, title: e.target.value })
-                                                }
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Subtitle
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={editingSection.subtitle || ''}
-                                                onChange={(e) =>
-                                                    setEditingSection({ ...editingSection, subtitle: e.target.value })
-                                                }
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Description
-                                            </label>
-                                            <textarea
-                                                value={editingSection.description || ''}
-                                                onChange={(e) =>
-                                                    setEditingSection({ ...editingSection, description: e.target.value })
-                                                }
-                                                rows="4"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Image URL
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={editingSection.imageUrl || ''}
-                                                onChange={(e) =>
-                                                    setEditingSection({ ...editingSection, imageUrl: e.target.value })
-                                                }
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                            />
-                                        </div>
-                                        <div className="flex gap-4">
-                                            <button
-                                                onClick={() => handleSectionSave(section._id)}
-                                                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                onClick={() => setEditingSection(null)}
-                                                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <p className="text-gray-700 mb-2">
-                                            <strong>Title:</strong> {section.title}
-                                        </p>
-                                        {section.subtitle && (
-                                            <p className="text-gray-700 mb-2">
-                                                <strong>Subtitle:</strong> {section.subtitle}
-                                            </p>
-                                        )}
-                                        {section.description && (
-                                            <p className="text-gray-700 mb-4">
-                                                <strong>Description:</strong> {section.description}
-                                            </p>
-                                        )}
-                                        <button
-                                            onClick={() => handleSectionEdit(section)}
-                                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                                        >
-                                            Edit
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* Amenities Management */}
-                <section className="mb-12">
-                    <h2 className="text-3xl font-bold mb-6 text-gray-800">Manage Amenities</h2>
-
-                    {/* Add New Amenity */}
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-700">Add New Amenity</h3>
-                        <div className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder="Title"
-                                value={newAmenity.title}
-                                onChange={(e) => setNewAmenity({ ...newAmenity, title: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                            />
-                            <textarea
-                                placeholder="Description"
-                                value={newAmenity.description}
-                                onChange={(e) => setNewAmenity({ ...newAmenity, description: e.target.value })}
-                                rows="3"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                            />
-                            <input
-                                type="text"
-                                placeholder="Image URL"
-                                value={newAmenity.imageUrl}
-                                onChange={(e) => setNewAmenity({ ...newAmenity, imageUrl: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                            />
-                            <button
-                                onClick={handleAmenityAdd}
-                                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-                            >
-                                Add Amenity
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Existing Amenities */}
-                    <div className="space-y-6">
-                        {amenities.map((amenity) => (
-                            <div key={amenity._id} className="bg-white rounded-lg shadow-md p-6">
-                                {editingAmenity && editingAmenity._id === amenity._id ? (
-                                    <div className="space-y-4">
-                                        <input
-                                            type="text"
-                                            value={editingAmenity.title}
-                                            onChange={(e) =>
-                                                setEditingAmenity({ ...editingAmenity, title: e.target.value })
-                                            }
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        />
-                                        <textarea
-                                            value={editingAmenity.description}
-                                            onChange={(e) =>
-                                                setEditingAmenity({ ...editingAmenity, description: e.target.value })
-                                            }
-                                            rows="3"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        />
-                                        <input
-                                            type="text"
-                                            placeholder="Image URL"
-                                            value={editingAmenity.imageUrl || ''}
-                                            onChange={(e) =>
-                                                setEditingAmenity({ ...editingAmenity, imageUrl: e.target.value })
-                                            }
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        />
-                                        <div className="flex gap-4">
-                                            <button
-                                                onClick={() => handleAmenitySave(amenity._id)}
-                                                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                onClick={() => setEditingAmenity(null)}
-                                                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <h4 className="text-lg font-semibold mb-2 text-gray-800">
-                                            {amenity.title}
-                                        </h4>
-                                        <p className="text-gray-700 mb-4">{amenity.description}</p>
-                                        <div className="flex gap-4">
-                                            <button
-                                                onClick={() => handleAmenityEdit(amenity)}
-                                                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleAmenityDelete(amenity._id)}
-                                                className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </section>
-
-                {/* FAQs Management */}
-                <section className="mb-12">
-                    <h2 className="text-3xl font-bold mb-6 text-gray-800">Manage FAQs</h2>
-
-                    {/* Add New FAQ */}
-                    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                        <h3 className="text-xl font-semibold mb-4 text-gray-700">Add New FAQ</h3>
-                        <div className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder="Question"
-                                value={newFaq.question}
-                                onChange={(e) => setNewFaq({ ...newFaq, question: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                            />
-                            <textarea
-                                placeholder="Answer"
-                                value={newFaq.answer}
-                                onChange={(e) => setNewFaq({ ...newFaq, answer: e.target.value })}
-                                rows="3"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                            />
-                            <button
-                                onClick={handleFaqAdd}
-                                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-                            >
-                                Add FAQ
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Existing FAQs */}
-                    <div className="space-y-6">
-                        {faqs.map((faq) => (
-                            <div key={faq._id} className="bg-white rounded-lg shadow-md p-6">
-                                {editingFaq && editingFaq._id === faq._id ? (
-                                    <div className="space-y-4">
-                                        <input
-                                            type="text"
-                                            value={editingFaq.question}
-                                            onChange={(e) =>
-                                                setEditingFaq({ ...editingFaq, question: e.target.value })
-                                            }
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        />
-                                        <textarea
-                                            value={editingFaq.answer}
-                                            onChange={(e) =>
-                                                setEditingFaq({ ...editingFaq, answer: e.target.value })
-                                            }
-                                            rows="3"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                                        />
-                                        <div className="flex gap-4">
-                                            <button
-                                                onClick={() => handleFaqSave(faq._id)}
-                                                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                onClick={() => setEditingFaq(null)}
-                                                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <h4 className="text-lg font-semibold mb-2 text-gray-800">
-                                            {faq.question}
-                                        </h4>
-                                        <p className="text-gray-700 mb-4">{faq.answer}</p>
-                                        <div className="flex gap-4">
-                                            <button
-                                                onClick={() => handleFaqEdit(faq)}
-                                                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleFaqDelete(faq._id)}
-                                                className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
-                                            >
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </section>
+            {/* Mobile Header */}
+            <div className="lg:hidden fixed top-0 w-full bg-white z-20 border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                <h2 className="text-xl font-serif font-bold text-secondary">LIMS Admin</h2>
+                <div className="flex gap-4">
+                    {/* Simplified Mobile Nav could go here */}
+                    <button onClick={handleLogout} className="text-gray-600"><LogOut size={20} /></button>
+                </div>
             </div>
+
+            {/* Main Content */}
+            <main className="flex-1 lg:ml-64 p-6 lg:p-10 pt-20 lg:pt-10">
+                {renderContent()}
+            </main>
+
+            {/* Modals */}
+
+            {/* Section Modal */}
+            <Modal
+                isOpen={isSectionModalOpen}
+                onClose={() => setIsSectionModalOpen(false)}
+                title="Edit Section"
+            >
+                {editingSection && (
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                            <input
+                                type="text"
+                                value={editingSection.title}
+                                onChange={(e) => setEditingSection({ ...editingSection, title: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Subtitle</label>
+                            <input
+                                type="text"
+                                value={editingSection.subtitle || ''}
+                                onChange={(e) => setEditingSection({ ...editingSection, subtitle: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea
+                                value={editingSection.description || ''}
+                                onChange={(e) => setEditingSection({ ...editingSection, description: e.target.value })}
+                                rows="4"
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                            <input
+                                type="text"
+                                value={editingSection.imageUrl || ''}
+                                onChange={(e) => setEditingSection({ ...editingSection, imageUrl: e.target.value })}
+                                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-secondary/20 focus:border-secondary outline-none transition-all"
+                            />
+                        </div>
+                        <button
+                            onClick={handleSectionSave}
+                            className="w-full bg-secondary text-white py-3 rounded-lg hover:bg-secondary-light transition-colors font-semibold"
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                )}
+            </Modal>
+
+            {/* Amenity Modal */}
+            <Modal
+                isOpen={isAmenityModalOpen}
+                onClose={() => setIsAmenityModalOpen(false)}
+                title={editingAmenity ? 'Edit Amenity' : 'Add Amenity'}
+            >
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <input
+                            type="text"
+                            value={editingAmenity ? editingAmenity.title : newAmenity.title}
+                            onChange={(e) => editingAmenity
+                                ? setEditingAmenity({ ...editingAmenity, title: e.target.value })
+                                : setNewAmenity({ ...newAmenity, title: e.target.value })
+                            }
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea
+                            value={editingAmenity ? editingAmenity.description : newAmenity.description}
+                            onChange={(e) => editingAmenity
+                                ? setEditingAmenity({ ...editingAmenity, description: e.target.value })
+                                : setNewAmenity({ ...newAmenity, description: e.target.value })
+                            }
+                            rows="4"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
+                        <input
+                            type="text"
+                            value={editingAmenity ? (editingAmenity.imageUrl || '') : newAmenity.imageUrl}
+                            onChange={(e) => editingAmenity
+                                ? setEditingAmenity({ ...editingAmenity, imageUrl: e.target.value })
+                                : setNewAmenity({ ...newAmenity, imageUrl: e.target.value })
+                            }
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        />
+                    </div>
+                    <button
+                        onClick={() => handleAmenitySave(!editingAmenity)}
+                        className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-semibold"
+                    >
+                        {editingAmenity ? 'Save Changes' : 'Add Amenity'}
+                    </button>
+                </div>
+            </Modal>
+
+            {/* FAQ Modal */}
+            <Modal
+                isOpen={isFaqModalOpen}
+                onClose={() => setIsFaqModalOpen(false)}
+                title={editingFaq ? 'Edit FAQ' : 'Add FAQ'}
+            >
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Question</label>
+                        <input
+                            type="text"
+                            value={editingFaq ? editingFaq.question : newFaq.question}
+                            onChange={(e) => editingFaq
+                                ? setEditingFaq({ ...editingFaq, question: e.target.value })
+                                : setNewFaq({ ...newFaq, question: e.target.value })
+                            }
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Answer</label>
+                        <textarea
+                            value={editingFaq ? editingFaq.answer : newFaq.answer}
+                            onChange={(e) => editingFaq
+                                ? setEditingFaq({ ...editingFaq, answer: e.target.value })
+                                : setNewFaq({ ...newFaq, answer: e.target.value })
+                            }
+                            rows="4"
+                            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                        />
+                    </div>
+                    <button
+                        onClick={() => handleFaqSave(!editingFaq)}
+                        className="w-full bg-primary text-white py-3 rounded-lg hover:bg-primary-dark transition-colors font-semibold"
+                    >
+                        {editingFaq ? 'Save Changes' : 'Add FAQ'}
+                    </button>
+                </div>
+            </Modal>
         </div>
     );
 };
